@@ -13,7 +13,7 @@ __global__ void multiply10(float *data, int size)
 
 int main()
 {
-    constexpr uint64_t num_elements = 1000000000;
+    constexpr uint64_t num_elements = 1'000'000'000;
     const size_t bytes = num_elements * sizeof(float);
 
     std::cout << "Allocating " << num_elements << " float elements (~4GB)..." << std::endl;

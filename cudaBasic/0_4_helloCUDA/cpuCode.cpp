@@ -3,7 +3,7 @@
 #include <chrono>
 
 int main() {
-    constexpr uint64_t num_elements = 1000000000;
+    constexpr uint64_t num_elements = 1'000'000'000;
 
     std::cout << "Allocating vector with " << num_elements << " float elements (~4GB)..." << std::endl;
     std::vector<float> data(num_elements, 1.0f);
