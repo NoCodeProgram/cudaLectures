@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.10)
+project(CUDA_Multiply LANGUAGES CXX CUDA)
+
+# Set CUDA architecture manually - Tesla T4 is compute capability 7.5
+# Adding multiple architectures for portability
+set(CMAKE_CUDA_ARCHITECTURES 60 70 75 80)
+message(STATUS "Using CUDA architectures: ${CMAKE_CUDA_ARCHITECTURES}")
+
+# Set CUDA standard
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Add executable
+add_executable(cudaCode cudaCode.cu)
+
+# Link CUDA libraries
+target_link_libraries(cudaCode PRIVATE cuda cudart)
+
+# Enable useful CUDA properties
+set_target_properties(cudaCode PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+)
+
+# Print CUDA info when configuring
+message(STATUS "CUDA Compiler: ${CMAKE_CUDA_COMPILER}")
+message(STATUS "CUDA Architectures: ${CMAKE_CUDA_ARCHITECTURES}")
