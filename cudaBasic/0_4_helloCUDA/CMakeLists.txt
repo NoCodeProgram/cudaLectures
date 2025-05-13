@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(CUDA_Multiply LANGUAGES CXX CUDA)
 
 # Adding multiple architectures for portability
