@@ -1,5 +1,7 @@
 #include <iostream>
 #include <chrono>
+#include <random>
+#include <numeric>
 #include <cuda_runtime.h>
 
 // CUDA kernel to transform elements
@@ -13,16 +15,20 @@ __global__ void multiply10(float *data, int size)
 
 int main()
 {
-    constexpr uint64_t num_elements = 1'000'000'000;
+    constexpr uint64_t num_elements = 2'000'000'000;
     const size_t bytes = num_elements * sizeof(float);
 
-    std::cout << "Allocating " << num_elements << " float elements (~4GB)..." << std::endl;
-    
+    std::cout << "Allocating " << num_elements << " float elements (~8GB)..." << std::endl;
+
+    constexpr uint64_t seed = 42;
+    std::mt19937 gen(seed);
+    std::uniform_real_distribution<float> dist(0.1f, 10.0f);
+   
     // Host data
     float *h_data = new float[num_elements];
     for (uint64_t i = 0; i < num_elements; i++)
     {
-        h_data[i] = 1.0f;
+        h_data[i] = dist(gen);
     }
     
     // Device data
@@ -50,7 +56,6 @@ int main()
 
     std::cout << "First and last element: " << h_data[0] << " " << h_data[num_elements - 1] << std::endl;
     std::cout << "Computation completed in " << total_time.count() << " seconds" << std::endl;
-    std::cout << "Total time: " << total_time.count() << " seconds" << std::endl;
     
     // Clean up
     cudaFree(d_data);
