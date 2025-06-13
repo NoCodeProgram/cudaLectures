@@ -14,14 +14,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add executable
-add_executable(cudaCode cudaCode.cu)
-add_executable(cpuCode cpuCode.cpp)
+add_executable(cudaAdd100 cudaAdd100.cu)
 
 # Link CUDA libraries
-target_link_libraries(cudaCode PRIVATE cuda cudart)
+target_link_libraries(cudaAdd100 PRIVATE cuda cudart)
 
 # Enable useful CUDA properties
-set_target_properties(cudaCode PROPERTIES
+set_target_properties(cudaAdd100 PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
 )
 
