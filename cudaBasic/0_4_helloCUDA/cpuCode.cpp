@@ -5,9 +5,9 @@
 #include <numeric>
 
 int main() {
-    constexpr uint64_t num_elements = 2'000'000'000;
+    constexpr uint64_t numElements = 2'000'000'000;
 
-    std::cout << "Allocating vector with " << num_elements << " float elements (~8GB)..." << std::endl;
+    std::cout << "Allocating vector with " << numElements << " float elements (~8GB)..." << std::endl;
     
     // Modern C++ random number generation
     constexpr uint64_t seed = 42;
@@ -16,10 +16,10 @@ int main() {
     
     // Initialize vector with random values
     std::vector<float> data;
-    data.reserve(num_elements);
+    data.reserve(numElements);
     
     std::cout << "Initializing with random values..." << std::endl;
-    for (uint64_t i = 0; i < num_elements; ++i) {
+    for (uint64_t i = 0; i < numElements; ++i) {
         data.emplace_back(dist(gen));
     }
 
@@ -31,10 +31,10 @@ int main() {
     }
     
     const auto end = std::chrono::high_resolution_clock::now();
-    const auto total_time = std::chrono::duration<double>(end - start);
+    const auto totalTime = std::chrono::duration<double>(end - start);
     
-    std::cout << "First and last element: " << data[0] << " " << data[num_elements - 1] << std::endl;
-    std::cout << "Computation completed in " << total_time.count() << " seconds" << std::endl;
+    std::cout << "First and last element: " << data[0] << " " << data[numElements - 1] << std::endl;
+    std::cout << "Computation completed in " << totalTime.count() << " seconds" << std::endl;
 
     return 0;
 }

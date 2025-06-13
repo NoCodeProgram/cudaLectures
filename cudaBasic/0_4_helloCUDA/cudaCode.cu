@@ -15,51 +15,48 @@ __global__ void multiply10(float *data, int size)
 
 int main()
 {
-    constexpr uint64_t num_elements = 2'000'000'000;
-    const size_t bytes = num_elements * sizeof(float);
+    constexpr uint64_t numElements = 2'000'000'000;
+    constexpr size_t bytes = numElements * sizeof(float);
 
-    std::cout << "Allocating " << num_elements << " float elements (~8GB)..." << std::endl;
+    std::cout << "Allocating " << numElements << " float elements (~8GB)..." << std::endl;
 
     constexpr uint64_t seed = 42;
     std::mt19937 gen(seed);
     std::uniform_real_distribution<float> dist(0.1f, 10.0f);
    
-    // Host data
-    float *h_data = new float[num_elements];
-    for (uint64_t i = 0; i < num_elements; i++)
+    float *hData = new float[numElements];
+    for (uint64_t i = 0; i < numElements; i++)
     {
-        h_data[i] = dist(gen);
+        hData[i] = dist(gen);
     }
     
-    // Device data
-    float *d_data = nullptr;
-    cudaMalloc(&d_data, bytes);
-    cudaMemcpy(d_data, h_data, bytes, cudaMemcpyHostToDevice);
+    float *dData = nullptr;
+    cudaMalloc(&dData, bytes);
+    cudaMemcpy(dData, hData, bytes, cudaMemcpyHostToDevice);
     
     // Set up CUDA kernel execution
     const int blockSize = 256;
-    const int gridSize = (num_elements + blockSize - 1) / blockSize;
+    const int gridSize = (numElements + blockSize - 1) / blockSize;
     
     const auto start = std::chrono::high_resolution_clock::now();
     
-    // Launch kernel
-    multiply10<<<gridSize, blockSize>>>(d_data, num_elements);
+    multiply10<<<gridSize, blockSize>>>(dData, numElements);
     
     // Wait for GPU to finish
     cudaDeviceSynchronize();
 
     const auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> total_time = end - start;
+    std::chrono::duration<double> totalTime = end - start;
     
     // Copy result back to host
-    cudaMemcpy(h_data, d_data, bytes, cudaMemcpyDeviceToHost);
+    cudaMemcpy(hData, dData, bytes, cudaMemcpyDeviceToHost);
 
-    std::cout << "First and last element: " << h_data[0] << " " << h_data[num_elements - 1] << std::endl;
-    std::cout << "Computation completed in " << total_time.count() << " seconds" << std::endl;
+    std::cout << "First and last element: " << hData[0] << " " << hData[numElements - 1] << std::endl;
+    std::cout << "Computation completed in " << totalTime.count() << " seconds" << std::endl;
     
     // Clean up
-    cudaFree(d_data);
-    delete[] h_data;
+    cudaFree(dData);
+    delete[] hData;
     
     return 0;
 }
