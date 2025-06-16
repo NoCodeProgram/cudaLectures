@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cuda_runtime.h>
+#include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -24,7 +25,6 @@ int main()
 
     assert(imgWidth == 32 && imgHeight == 32 && imgChannels == 1);
     
-
     constexpr int32_t imgSize = 32 * 32;
     constexpr size_t imgBytes = imgSize * sizeof(uint8_t);
 
