@@ -13,6 +13,8 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include_directories(../../utilities)
+
 # Add executable
 add_executable(imgInvert imgInvert.cu)
 
