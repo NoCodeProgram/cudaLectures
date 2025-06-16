@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(HelloCuda LANGUAGES CXX CUDA))
+project(HelloCuda LANGUAGES CXX CUDA)
 
 # Set CUDA standard
 set(CMAKE_CUDA_STANDARD 20)
