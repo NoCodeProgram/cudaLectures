@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(CUDA_Multiply LANGUAGES CXX CUDA)
+project(AddVecs LANGUAGES CXX CUDA)
 
 # Adding multiple architectures for portability
 set(CMAKE_CUDA_ARCHITECTURES all-major)
