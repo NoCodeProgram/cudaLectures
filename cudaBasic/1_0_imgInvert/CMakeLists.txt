@@ -13,16 +13,20 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(../../utilities)
+# Add executable FIRST
+add_executable(ImgInvert imgInvert.cu)
 
-# Add executable
-add_executable(imgInvert imgInvert.cu)
+# THEN configure the target
+target_include_directories(ImgInvert PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../utilities)
+target_link_libraries(ImgInvert PRIVATE cuda cudart)
 
-# Link CUDA libraries
-target_link_libraries(imgInvert PRIVATE cuda cudart)
+# Suppress STB library warnings for CUDA compiler
+target_compile_options(ImgInvert PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppress 550>
+)
 
 # Enable useful CUDA properties
-set_target_properties(imgInvert PROPERTIES
+set_target_properties(ImgInvert PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
 )
 
