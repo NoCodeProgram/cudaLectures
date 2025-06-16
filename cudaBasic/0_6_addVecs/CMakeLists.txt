@@ -14,3 +14,7 @@ target_link_libraries(addVecs PRIVATE cuda cudart)
 set_target_properties(addVecs PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
 )
+
+add_test(NAME test_addVecs 
+         COMMAND addVecs
+         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})

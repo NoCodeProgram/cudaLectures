@@ -23,3 +23,7 @@ set_target_properties(imgInvert PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../resources/cat32gray.png 
                ${CMAKE_CURRENT_BINARY_DIR}/cat32gray.png COPYONLY)
+
+add_test(NAME test_imgInvert 
+         COMMAND imgInvert
+         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})

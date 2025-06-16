@@ -17,3 +17,10 @@ target_link_libraries(cudaCode PRIVATE cuda cudart)
 set_target_properties(cudaCode PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
 )
+
+add_test(NAME test_helloCUDA 
+         COMMAND cudaCode
+         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+add_test(NAME test_helloCPU
+         COMMAND cpuCode
+         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})

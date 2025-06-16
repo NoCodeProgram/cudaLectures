@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.18)
 project(CudaBasics LANGUAGES CXX CUDA)
 
-# 서브디렉토리 추가
+enable_testing()
+
 add_subdirectory(0_3_cppPrerequisites)
 add_subdirectory(0_4_helloCUDA)
 add_subdirectory(0_5_cudaSyntax)
