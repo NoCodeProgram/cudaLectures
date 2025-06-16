@@ -20,3 +20,6 @@ target_compile_options(imgInvert PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppre
 
 # CUDA properties
 set_target_properties(imgInvert PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../resources/cat32gray.png 
+               ${CMAKE_CURRENT_BINARY_DIR}/cat32gray.png COPYONLY)
