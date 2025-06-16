@@ -1,83 +1,61 @@
-
 #include <iostream>
 #include <cuda_runtime.h>
 
-__global__ void vectorAdd(const int32_t* dataA, const int32_t* dataB, int32_t* dataC)
-{
-    const int idx = threadIdx.x;
-    dataC[idx] = dataA[idx] + dataB[idx];
-}
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION  
+#include "stb_image_write.h"
 
-void cpuVectorAdd(const int32_t* dataA, const int32_t* dataB, int32_t* dataC, const int size)
+__global__ void invertKernel(const uint8_t* input, uint8_t* output)
 {
-    for(int32_t idx = 0; idx < size; ++idx)
-    {
-        dataC[idx] = dataA[idx] + dataB[idx];
-    }
+    int32_t x = threadIdx.x;
+    int32_t y = threadIdx.y;
+    int32_t idx = y * 32 + x;
+    
+    output[idx] = 255 - input[idx];
 }
 
 int main()
 {
-    constexpr uint32_t dataLength = 1024;
+    // Load image
+    int imgWidth, imgHeight, imgChannels;
+    uint8_t* hostImage = stbi_load("cat32gray.png", 
+                                   &imgWidth, &imgHeight, &imgChannels, 1);
 
-// Allocate host memory
-    int32_t *hostDataA = new int32_t[dataLength];
-    int32_t *hostDataB = new int32_t[dataLength];
-    int32_t *hostDataC = new int32_t[dataLength];
+    assert(imgWidth == 32 && imgHeight == 32 && imgChannels == 1);
+    
 
-// Initialize data
-    for (int32_t i = 0; i < dataLength; ++i)
-    {
-        hostDataA[i] = i;// A = [0, 1, 2, 3, ...]
-        hostDataB[i] = i * 2;// B = [0, 2, 4, 6, ...]
-        hostDataC[i] = 0;// C = [0, 0, 0, 0, ...]
-    }
+    constexpr int32_t imgSize = 32 * 32;
+    constexpr size_t imgBytes = imgSize * sizeof(uint8_t);
 
-// Allocate device memory
-    int32_t* deviceDataA = nullptr;
-    int32_t* deviceDataB = nullptr;
-    int32_t* deviceDataC = nullptr;
-
-    cudaMalloc(&deviceDataA, dataLength * sizeof(int32_t));
-    cudaMalloc(&deviceDataB, dataLength * sizeof(int32_t));
-    cudaMalloc(&deviceDataC, dataLength * sizeof(int32_t));
-
-// Copy host to device memory
-    cudaMemcpy(deviceDataA, hostDataA, dataLength * sizeof(int32_t), cudaMemcpyHostToDevice);
-    cudaMemcpy(deviceDataB, hostDataB, dataLength * sizeof(int32_t), cudaMemcpyHostToDevice);
-
-// Launch kernel
-    vectorAdd <<<1, dataLength >>> (deviceDataA, deviceDataB, deviceDataC);
-
-// Synchronize
+    // Allocate host memory
+    std::vector<uint8_t> hostResult(imgSize);
+    
+    uint8_t* deviceInput;
+    uint8_t* deviceOutput;
+    
+    cudaMalloc(&deviceInput, imgBytes);
+    cudaMalloc(&deviceOutput, imgBytes);
+    
+    // Copy input data to GPU
+    cudaMemcpy(deviceInput, hostImage, imgBytes, cudaMemcpyHostToDevice);
+    
+    // Execute kernel
+    constexpr dim3 blockSize(32, 32);
+    invertKernel<<<1, blockSize>>>(deviceInput, deviceOutput);
     cudaDeviceSynchronize();
+    
+    // Copy result back to host
+    cudaMemcpy(hostResult.data(), deviceOutput, imgBytes, cudaMemcpyDeviceToHost);
 
-// Copy device to host memory
-    cudaMemcpy(hostDataC, deviceDataC, dataLength * sizeof(int32_t), cudaMemcpyDeviceToHost);
+    // Save result image
+    stbi_write_png("inverted_cat32gray.png", imgWidth, imgHeight, imgChannels, hostResult.data(), imgWidth * sizeof(uint8_t));
 
-// Print results (first 10 and last 10 elements)
-    std::cout << "First 10 : ";
-    for (int32_t i = 0; i < 10; ++i)
-    {
-        std::cout << hostDataC[i] << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "Last 10 : ";
-    for (int32_t i = dataLength - 10; i < static_cast<int32_t>(dataLength); ++i)
-    {
-        std::cout << hostDataC[i] << " ";
-    }
-    std::cout << std::endl;
-
-// Free memory
-    cudaFree(deviceDataA);
-    cudaFree(deviceDataB);
-    cudaFree(deviceDataC);
-
-    delete[] hostDataA;
-    delete[] hostDataB;
-    delete[] hostDataC;
-
+    // Free memory
+    cudaFree(deviceInput);
+    cudaFree(deviceOutput);
+    stbi_image_free(hostImage);
+    
+    std::cout << "Image inversion completed!" << std::endl;
     return 0;
 }
