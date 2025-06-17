@@ -17,6 +17,10 @@ set_target_properties(cudaAdd100Err PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
 )
 
-add_test(NAME test_cudaAdd100Err 
+add_test(NAME test_cudaAdd100Err_should_fail 
          COMMAND cudaAdd100Err
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+# Tell CMake this test SHOULD fail
+set_tests_properties(test_cudaAdd100Err_should_fail PROPERTIES 
+    WILL_FAIL TRUE)
