@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 #include <cuda_runtime.h>
 
 __global__ void add100(int32_t* data)
