@@ -17,6 +17,6 @@ set_target_properties(deviceCheck PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
 )
 
-add_test(NAME test_deviceCheck_should_fail 
+add_test(NAME test_deviceCheck 
          COMMAND deviceCheck
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
