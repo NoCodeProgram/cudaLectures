@@ -7,13 +7,13 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION  
 #include "stb_image_write.h"
 
-__global__ void invertKernel(const uint8_t* input, uint8_t* output)
+__global__ void invertKernel(uint8_t* imgPtr)
 {
     int32_t x = threadIdx.x;
     int32_t y = threadIdx.y;
     int32_t idx = y * 32 + x;
-    
-    output[idx] = 255 - input[idx];
+
+    imgPtr[idx] = 255 - imgPtr[idx];
 }
 
 int main()
@@ -27,33 +27,21 @@ int main()
     
     constexpr int32_t imgSize = 32 * 32;
     constexpr size_t imgBytes = imgSize * sizeof(uint8_t);
+    
+    uint8_t* deviceImgPtr;
+    cudaMalloc(&deviceImgPtr, imgBytes);
 
-    // Allocate host memory
-    std::vector<uint8_t> hostResult(imgSize);
-    
-    uint8_t* deviceInput;
-    uint8_t* deviceOutput;
-    
-    cudaMalloc(&deviceInput, imgBytes);
-    cudaMalloc(&deviceOutput, imgBytes);
-    
-    // Copy input data to GPU
-    cudaMemcpy(deviceInput, hostImage, imgBytes, cudaMemcpyHostToDevice);
-    
-    // Execute kernel
+    cudaMemcpy(deviceImgPtr, hostImage, imgBytes, cudaMemcpyHostToDevice);
+
     constexpr dim3 blockSize(32, 32);
-    invertKernel<<<1, blockSize>>>(deviceInput, deviceOutput);
+    invertKernel<<<1, blockSize>>>(deviceImgPtr);
     cudaDeviceSynchronize();
     
-    // Copy result back to host
-    cudaMemcpy(hostResult.data(), deviceOutput, imgBytes, cudaMemcpyDeviceToHost);
+    cudaMemcpy(hostImage, deviceImgPtr, imgBytes, cudaMemcpyDeviceToHost);
 
-    // Save result image
-    stbi_write_png("inverted_cat32gray.png", imgWidth, imgHeight, imgChannels, hostResult.data(), imgWidth * sizeof(uint8_t));
+    stbi_write_png("inverted_cat32gray.png", imgWidth, imgHeight, imgChannels, hostImage, imgWidth * sizeof(uint8_t));
 
-    // Free memory
-    cudaFree(deviceInput);
-    cudaFree(deviceOutput);
+    cudaFree(deviceImgPtr);
     stbi_image_free(hostImage);
     
     std::cout << "Image inversion completed!" << std::endl;
