@@ -7,20 +7,20 @@
 
 __global__ void colorToGrayscaleKernel(const uint8_t* colorInput, uint8_t* grayOutput)
 {
-    const int32_t x = threadIdx.x;  // 0 ~ 31
-    const int32_t y = threadIdx.y;  // 0 ~ 31
+    const int x = threadIdx.x;  // 0 ~ 31
+    const int y = threadIdx.y;  // 0 ~ 31
     
-    const int32_t colorIdx = (y * 32 + x) * 3;
-    
-    const int32_t grayIdx = y * 32 + x;
+    const int colorIdx = (y * 32 + x) * 3;
 
-    const uint8_t r = colorInput[colorIdx + 0];
-    const uint8_t g = colorInput[colorIdx + 1];
-    const uint8_t b = colorInput[colorIdx + 2];
+    const int grayIdx = y * 32 + x;
+
+    const float r = static_cast<float>(colorInput[colorIdx + 0]);
+    const float g = static_cast<float>(colorInput[colorIdx + 1]);
+    const float b = static_cast<float>(colorInput[colorIdx + 2]);
 
     const float gray = 0.299f * r + 0.587f * g + 0.114f * b;
 
-    grayOutput[grayIdx] = (uint8_t)gray;
+    grayOutput[grayIdx] = static_cast<uint8_t>(gray);
 }
 
 int main()
