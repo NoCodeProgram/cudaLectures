@@ -9,17 +9,13 @@
 
 __global__ void verticalFlipKernel(const uint8_t* input, uint8_t* output)
 {
-    int32_t x = threadIdx.x;  // 0 ~ 31
-    int32_t y = threadIdx.y;  // 0 ~ 31
+    const int32_t x = threadIdx.x;  // 0 ~ 31
+    const int32_t y = threadIdx.y;  // 0 ~ 31
+    const int32_t targetY = 31 - y;
+
+    const int32_t inputIdx = y * 32 + x;
+    const int32_t outputIdx = targetY * 32 + x;
     
-    // Calculate original pixel position
-    int32_t inputIdx = y * 32 + x;
-    
-    // Calculate vertically flipped pixel position
-    int32_t flippedY = 31 - y;  // y=0 → 31, y=1 → 30, ..., y=31 → 0
-    int32_t outputIdx = flippedY * 32 + x;
-    
-    // Copy pixel (only position changes)
     output[outputIdx] = input[inputIdx];
 }
 
