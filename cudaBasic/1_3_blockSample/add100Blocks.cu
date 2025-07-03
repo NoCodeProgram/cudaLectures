@@ -31,7 +31,7 @@ int main()
     
     cudaFree(deviceData);
 
-    for(uint32_t idx = datalength - 10; idx < dataLength; ++idx)
+    for(uint32_t idx = dataLength - 10; idx < dataLength; ++idx)
     {
         std::cout << hostData[idx] << " ";
     }
