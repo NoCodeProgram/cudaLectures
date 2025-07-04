@@ -4,7 +4,7 @@
 
 __global__ void add100(int32_t* data) 
 {
-    const int idx = threadIdx.x;
+    const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     data[idx] = data[idx] + 100;
 }
 
