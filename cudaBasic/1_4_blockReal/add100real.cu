@@ -5,9 +5,12 @@
 __global__ void add100(int32_t* data, uint32_t dataLength) 
 {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < dataLength) {
-        data[idx] = data[idx] + 100;
+    if (dataLength <= idx)
+    {
+        return; // Prevent out-of-bounds access
     }
+    data[idx] = data[idx] + 100;
+
 }
 
 int main()
