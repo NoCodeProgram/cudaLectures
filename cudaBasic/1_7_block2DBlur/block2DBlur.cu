@@ -5,12 +5,7 @@
 #include <iostream>
 #include <vector>
 
-__device__ int clamp(int val, int min, int max)
-{
-    return val < min ? min : (val > max ? max : val);
-}
-
-__global__ void blurKernel(const uint8_t* input, uint8_t* output, int width, int height)
+__global__ void blur3x3Kernel(const uint8_t* input, uint8_t* output, int width, int height)
 {
     const int x = blockIdx.x * blockDim.x + threadIdx.x;
     const int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -26,10 +21,15 @@ __global__ void blurKernel(const uint8_t* input, uint8_t* output, int width, int
     // Iterate over 3x3 neighborhood
     for (int dy = -1; dy <= 1; dy++) {
         for (int dx = -1; dx <= 1; dx++) {
-            const int nx = clamp(x + dx, 0, width - 1);
-            const int ny = clamp(y + dy, 0, height - 1);
-            const int idx = ny * width + nx;
+            const int nx = x + dx;
+            const int ny = y + dy;
 
+            // Skip if out of bounds
+            if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
+                continue;
+            }
+
+            const int idx = ny * width + nx;
             sum += static_cast<float>(input[idx]);
             count++;
         }
@@ -79,7 +79,7 @@ int main()
     std::cout << "Launching kernel with grid (" << gridSize.x << ", " << gridSize.y
               << ") and block (" << blockSize.x << ", " << blockSize.y << ")" << std::endl;
 
-    blurKernel<<<gridSize, blockSize>>>(deviceInput, deviceOutput, imgWidth, imgHeight);
+    blur3x3Kernel<<<gridSize, blockSize>>>(deviceInput, deviceOutput, imgWidth, imgHeight);
     cudaDeviceSynchronize();
 
     // Copy blurred result back to CPU
