@@ -7,28 +7,22 @@
 
 __global__ void colorToGrayscaleKernel(const uint8_t* colorInput, uint8_t* grayOutput, int width, int height)
 {
-    // Calculate global x and y coordinates using 2D grid and block indices
-    const int x = blockIdx.x * blockDim.x + threadIdx.x;  // 0 ~ 1023
-    const int y = blockIdx.y * blockDim.y + threadIdx.y;  // 0 ~ 1023
+    const int x = blockIdx.x * blockDim.x + threadIdx.x;
+    const int y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    // Check bounds to avoid out-of-bounds memory access
     if (x >= width || y >= height) {
         return;
     }
 
-    // Calculate indices for color (RGB) and grayscale images
     const int colorIdx = (y * width + x) * 3;
     const int grayIdx = y * width + x;
 
-    // Read RGB values
     const float r = static_cast<float>(colorInput[colorIdx + 0]);
     const float g = static_cast<float>(colorInput[colorIdx + 1]);
     const float b = static_cast<float>(colorInput[colorIdx + 2]);
 
-    // Convert to grayscale using standard luminance formula
     const float gray = 0.299f * r + 0.587f * g + 0.114f * b;
 
-    // Write grayscale value
     grayOutput[grayIdx] = static_cast<uint8_t>(gray);
 }
 
@@ -43,6 +37,8 @@ int main()
         std::cerr << "Error: Failed to load cat1024color.png" << std::endl;
         return 1;
     }
+
+    assert(imgChannels == 3);
 
     std::cout << "Loaded image: " << imgWidth << "x" << imgHeight
               << " with " << imgChannels << " channels" << std::endl;
@@ -70,16 +66,7 @@ int main()
     std::cout << "Launching kernel with grid (" << gridSize.x << ", " << gridSize.y
               << ") and block (" << blockSize.x << ", " << blockSize.y << ")" << std::endl;
 
-    // Launch kernel with 2D grid of blocks
     colorToGrayscaleKernel<<<gridSize, blockSize>>>(deviceColorInput, deviceGrayOutput, imgWidth, imgHeight);
-
-    // Check for kernel launch errors
-    cudaError_t err = cudaGetLastError();
-    if (err != cudaSuccess) {
-        std::cerr << "Kernel launch error: " << cudaGetErrorString(err) << std::endl;
-        return 1;
-    }
-
     cudaDeviceSynchronize();
 
     // Copy grayscale result back to CPU

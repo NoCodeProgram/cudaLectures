@@ -10,12 +10,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Include utilities directory for STB image headers
-include_directories(${CMAKE_SOURCE_DIR}/../utilities)
-
-# Add executable
 add_executable(block2DGrayscale block2DGrayscale.cu)
+
+target_include_directories(block2DGrayscale PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../utilities)
 target_link_libraries(block2DGrayscale PRIVATE cuda cudart)
+target_compile_options(block2DGrayscale PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppress 550>)
+
 set_target_properties(block2DGrayscale PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
 )
