@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-__global__ void blur3x3Kernel(const uint8_t* input, uint8_t* output, int width, int height)
+__global__ void blur5x5Kernel(const uint8_t* input, uint8_t* output, int width, int height)
 {
     const int x = blockIdx.x * blockDim.x + threadIdx.x;
     const int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -14,13 +14,13 @@ __global__ void blur3x3Kernel(const uint8_t* input, uint8_t* output, int width, 
         return;
     }
 
-    // 3x3 average blur
+    // 5x5 average blur
     float sum = 0.0f;
     int count = 0;
 
-    // Iterate over 3x3 neighborhood
-    for (int dy = -1; dy <= 1; dy++) {
-        for (int dx = -1; dx <= 1; dx++) {
+    // Iterate over 5x5 neighborhood
+    for (int dy = -2; dy <= 2; dy++) {
+        for (int dx = -2; dx <= 2; dx++) {
             const int nx = x + dx;
             const int ny = y + dy;
 
