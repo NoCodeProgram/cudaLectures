@@ -94,7 +94,7 @@ int main()
     cudaFree(deviceOutput);
     stbi_image_free(hostGrayImage);
 
-    std::cout << "3x3 average blur completed!" << std::endl;
+    std::cout << "5x5 average blur completed!" << std::endl;
     std::cout << "Output saved to: cat1000gray_blurred.png" << std::endl;
     return 0;
 }
