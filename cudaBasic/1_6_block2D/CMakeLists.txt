@@ -17,8 +17,8 @@ target_compile_options(block2DGrayscale PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-diag
 
 set_target_properties(block2DGrayscale PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../resources/cat1024color.png 
-               ${CMAKE_CURRENT_BINARY_DIR}/cat1024color.png COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../../resources/cat1000color.png 
+               ${CMAKE_CURRENT_BINARY_DIR}/cat1000color.png COPYONLY)
 
 add_test(NAME test_block2DGrayscale
          COMMAND block2DGrayscale

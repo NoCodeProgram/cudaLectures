@@ -28,13 +28,13 @@ __global__ void colorToGrayscaleKernel(const uint8_t* colorInput, uint8_t* grayO
 
 int main()
 {
-    // Load 1024x1024 color image (3 channels)
+    // Load 1000x1000 color image (3 channels)
     int imgWidth, imgHeight, imgChannels;
-    uint8_t* hostColorImage = stbi_load("cat1024color.png",
+    uint8_t* hostColorImage = stbi_load("cat1000color.png",
         &imgWidth, &imgHeight, &imgChannels, 3);
 
     if (!hostColorImage) {
-        std::cerr << "Error: Failed to load cat1024color.png" << std::endl;
+        std::cerr << "Error: Failed to load cat1000color.png" << std::endl;
         return 1;
     }
 
@@ -59,8 +59,8 @@ int main()
     constexpr int BLOCK_SIZE = 32;
     const dim3 blockSize(BLOCK_SIZE, BLOCK_SIZE);  // 32x32 threads per block
     const dim3 gridSize(
-        (imgWidth + BLOCK_SIZE - 1) / BLOCK_SIZE,   // 1024/32 = 32 blocks in x
-        (imgHeight + BLOCK_SIZE - 1) / BLOCK_SIZE   // 1024/32 = 32 blocks in y
+        (imgWidth + BLOCK_SIZE - 1) / BLOCK_SIZE,   // 1000/32 = 32 blocks in x
+        (imgHeight + BLOCK_SIZE - 1) / BLOCK_SIZE   // 1000/32 = 32 blocks in y
     );
 
     std::cout << "Launching kernel with grid (" << gridSize.x << ", " << gridSize.y
@@ -74,7 +74,7 @@ int main()
     cudaMemcpy(hostGrayResult.data(), deviceGrayOutput, grayImageSize, cudaMemcpyDeviceToHost);
 
     // 흑백 이미지 저장
-    stbi_write_png("cat1024gray_converted.png", imgWidth, imgHeight, 1, hostGrayResult.data(), imgWidth);
+    stbi_write_png("cat1000gray_converted.png", imgWidth, imgHeight, 1, hostGrayResult.data(), imgWidth);
 
     // 메모리 해제
     cudaFree(deviceColorInput);
@@ -82,6 +82,6 @@ int main()
     stbi_image_free(hostColorImage);
 
     std::cout << "Color to grayscale conversion completed!" << std::endl;
-    std::cout << "Output saved to: cat1024gray_converted.png" << std::endl;
+    std::cout << "Output saved to: cat1000gray_converted.png" << std::endl;
     return 0;
 }
