@@ -79,7 +79,7 @@ int main()
     std::cout << "Launching kernel with grid (" << gridSize.x << ", " << gridSize.y
               << ") and block (" << blockSize.x << ", " << blockSize.y << ")" << std::endl;
 
-    blur3x3Kernel<<<gridSize, blockSize>>>(deviceInput, deviceOutput, imgWidth, imgHeight);
+    blur5x5Kernel<<<gridSize, blockSize>>>(deviceInput, deviceOutput, imgWidth, imgHeight);
     cudaDeviceSynchronize();
 
     // Copy blurred result back to CPU
